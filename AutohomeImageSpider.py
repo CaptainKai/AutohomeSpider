@@ -3,6 +3,7 @@ import os
 import requests
 from lxml import etree
 import time
+import sys
 
 IMAGESET_PATH = "Images/"
 ROOT_URL = "https://car.autohome.com.cn"
@@ -88,11 +89,13 @@ def get_pic_list(url):
                         pics_url = next_page.get('href', None)
                         if pics_url == "javascript:void(0);":
                             pics_url = None
+                    else:
+                        pics_url = None
     return pics_list
 
 
 
-def mainWork( root_utl: str, interval: float, start_brand = "ABT"):
+def mainWork(root_utl=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT"):
     brand_list = get_brand_list(root_utl)
     flag = False
     for brand in brand_list:
@@ -138,4 +141,4 @@ def mainWork( root_utl: str, interval: float, start_brand = "ABT"):
 
 
 if __name__ == "__main__":
-    mainWork(root_utl=ROOT_URL + ALL_BRANDS_URL, interval=0.85)
+    mainWork(root_utl=ROOT_URL + ALL_BRANDS_URL, interval=0.5)

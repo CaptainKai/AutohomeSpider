@@ -95,8 +95,8 @@ def get_pic_list(url):
 
 
 
-def mainWork(root_utl=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT"):
-    brand_list = get_brand_list(root_utl)
+def mainWork(root_url=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT"):
+    brand_list = get_brand_list(root_url)
     flag = False
     for brand in brand_list:
         brand_name = brand.get('name', None)
@@ -149,4 +149,4 @@ def mainWork(root_utl=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT")
 
 
 if __name__ == "__main__":
-    mainWork(root_utl=ROOT_URL + ALL_BRANDS_URL, interval=0.5, start_brand="雪佛兰")
+    mainWork(root_url=ROOT_URL + ALL_BRANDS_URL, interval=0.5, start_brand="雪佛兰")

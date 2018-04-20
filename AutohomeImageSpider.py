@@ -105,6 +105,8 @@ def mainWork(root_utl=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT")
             flag = True
 
         if flag and brand_name is not None and brand_href is not None:
+            if brand_name.find(":") != -1:
+                brand_name = brand_name.replace(":", "_")
             brand_path = os.path.join(IMAGESET_PATH, brand_name)
             if not os.path.exists(brand_path):
                 os.makedirs(brand_path)
@@ -112,6 +114,8 @@ def mainWork(root_utl=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT")
             for cartype in cartype_list:
                 cartype_href = cartype.get('href', None)
                 cartype_name = cartype.get('name', None)
+                if cartype_name.find(":") != -1:
+                    cartype_name = cartype_name.replace(":", "_")
                 if cartype_name is not None and cartype_href is not None:
                     cartype_path = os.path.join(brand_path, cartype_name)
                     if not os.path.exists(cartype_path):
@@ -122,6 +126,10 @@ def mainWork(root_utl=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT")
                         pic_name = pic.get('name', None)
                         if pic_href is not None and pic_name is not None:
                             image_name = pic_href.split('/')[-1]
+                            if image_name.find(":") != -1:
+                                image_name = image_name.replace(":", "_")
+                            if pic_name.find(":") != -1:
+                                pic_name = pic_name.replace(":", "_")
                             image_path = os.path.join(cartype_path, pic_name)
                             if not os.path.exists(image_path):
                                 os.makedirs(image_path)
@@ -141,4 +149,4 @@ def mainWork(root_utl=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT")
 
 
 if __name__ == "__main__":
-    mainWork(root_utl=ROOT_URL + ALL_BRANDS_URL, interval=0.5)
+    mainWork(root_utl=ROOT_URL + ALL_BRANDS_URL, interval=0.5, start_brand="雪佛兰")

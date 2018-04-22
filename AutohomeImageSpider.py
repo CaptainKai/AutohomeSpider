@@ -5,7 +5,7 @@ from lxml import etree
 import time
 import sys
 
-IMAGESET_PATH = "Images/"
+IMAGESET_PATH = "../Images/"
 ROOT_URL = "https://car.autohome.com.cn"
 ALL_BRANDS_URL = "/AsLeftMenu/As_LeftListNew.ashx?typeId=2%20&brandId=0%20&fctId=0%20&seriesId=0"
 
@@ -45,7 +45,9 @@ def get_cartype_list(url):
     cartype_list = []
     if html is not None:
         page_tree = etree.HTML(html)
-        type_area = page_tree.xpath("/html/body/div[2]/div[1]/div[2]/div[6]/div/div[2]/div/ul/*")
+        type_area = []
+        for i in range(15):
+            type_area.extend(page_tree.xpath("/html/body/div[2]/div[1]/div[2]/div[%d]/div/div[2]/div/ul/*" %(i)))
         for type_ in type_area:
             type_href = type_.xpath("./div/span/a")
             type_name = type_.xpath("./div/span/a/text()")
@@ -106,20 +108,15 @@ def mainWork(root_url=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT")
 
         if flag and brand_name is not None and brand_href is not None:
             if brand_name.find(":") != -1:
-                brand_name = brand_name.replace(":", "_")
-            brand_path = os.path.join(IMAGESET_PATH, brand_name)
-            if not os.path.exists(brand_path):
-                os.makedirs(brand_path)
+                brand_name = brand_name.replace(":", "-")
             cartype_list = get_cartype_list(ROOT_URL + brand_href)
             for cartype in cartype_list:
                 cartype_href = cartype.get('href', None)
                 cartype_name = cartype.get('name', None)
                 if cartype_name.find(":") != -1:
-                    cartype_name = cartype_name.replace(":", "_")
+                    cartype_name = cartype_name.replace(":", "-")
                 if cartype_name is not None and cartype_href is not None:
-                    cartype_path = os.path.join(brand_path, cartype_name)
-                    if not os.path.exists(cartype_path):
-                        os.makedirs(cartype_path)
+                    cartype_path = brand_name + '_' + cartype_name
                     pic_list = get_pic_list(ROOT_URL + cartype_href)
                     for pic in pic_list:
                         pic_href = pic.get('href', None)
@@ -127,26 +124,27 @@ def mainWork(root_url=ROOT_URL+ALL_BRANDS_URL, interval=0.85, start_brand="ABT")
                         if pic_href is not None and pic_name is not None:
                             image_name = pic_href.split('/')[-1]
                             if image_name.find(":") != -1:
-                                image_name = image_name.replace(":", "_")
+                                image_name = image_name.replace(":", "-")
                             if pic_name.find(":") != -1:
-                                pic_name = pic_name.replace(":", "_")
-                            image_path = os.path.join(cartype_path, pic_name)
+                                pic_name = pic_name.replace(":", "-")
+                            image_path = os.path.join(IMAGESET_PATH, cartype_path)
                             if not os.path.exists(image_path):
                                 os.makedirs(image_path)
                             image_save_name = os.path.join(image_path, image_name)
-                            try:
-                                image = requests.get("https:" + pic_href)
-                                with open(image_save_name, 'wb') as f:
-                                    f.write(image.content)
-                                    f.close()
-                                    print("Download %s successfully." % (image_save_name))
-                                    time.sleep(interval)
-                            except Exception as e:
-                                print("Download %s failed." % (image_save_name))
-                                continue
+                            if not os.path.exists(image_save_name):
+                                try:
+                                    image = requests.get("https:" + pic_href)
+                                    with open(image_save_name, 'wb') as f:
+                                        f.write(image.content)
+                                        f.close()
+                                        print("Download %s successfully." % (image_save_name))
+                                        time.sleep(interval)
+                                except Exception as e:
+                                    print("Download %s failed." % (image_save_name))
+                                    continue
         else:
             continue
 
 
 if __name__ == "__main__":
-    mainWork(root_url=ROOT_URL + ALL_BRANDS_URL, interval=0.5, start_brand="雪佛兰")
+    mainWork(root_url=ROOT_URL + ALL_BRANDS_URL, interval=0.2, start_brand="奥迪")
